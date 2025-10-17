@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/Pavanikoduru/sample-app.git'
+                git 'https://github.com/Pavanikoduru/sample-app.git'
             }
         }
 
@@ -28,7 +28,12 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deployment stage - run your Docker container or Kubernetes deployment'
+                sh '''
+                    docker stop sample-app || true
+                    docker rm sample-app || true
+                    docker pull $DOCKER_IMAGE:latest
+                    docker run -d --name sample-app -p 3000:3000 $DOCKER_IMAGE:latest
+                '''
             }
         }
     }
